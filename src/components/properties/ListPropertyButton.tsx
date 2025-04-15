@@ -57,8 +57,8 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
             <DialogTitle>List Your Property</DialogTitle>
             <DialogDescription>
               {userRole === "agent" 
-                ? "As an agent, you can list up to 5 properties for free." 
-                : "As a user, you can list up to 3 properties for free."}
+                ? "As an agent, you can list up to 5 properties for free, or up to 20 with a premium account." 
+                : "As a user, you can list up to 3 properties for free, or up to 7 with a premium account."}
               {remainingListings !== null && 
                 ` You have ${remainingListings} free listings remaining.`}
             </DialogDescription>
@@ -119,8 +119,8 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
             <DialogTitle>Upgrade Your Account</DialogTitle>
             <DialogDescription>
               {userRole === "agent" 
-                ? "Upgrade to list up to 10 properties for just $10." 
-                : "Upgrade to list up to 7 properties for just $5."}
+                ? "Upgrade to list up to 20 properties for just $19.99/month." 
+                : "Upgrade to list up to 7 properties for just $9.99/month."}
             </DialogDescription>
           </DialogHeader>
 
@@ -131,11 +131,11 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
               </h3>
               <p className="text-muted-foreground mb-4">
                 {userRole === "agent" 
-                  ? "List up to 10 properties with premium visibility." 
-                  : "List up to 7 properties with improved search rankings."}
+                  ? "List up to 20 properties with premium visibility and featured placement." 
+                  : "List up to 7 properties with improved search rankings and better visibility."}
               </p>
               <div className="text-2xl font-bold">
-                {userRole === "agent" ? "$10" : "$5"}
+                {userRole === "agent" ? "$19.99" : "$9.99"}<span className="text-sm text-muted-foreground">/month</span>
               </div>
             </div>
           </div>

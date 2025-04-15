@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { Shield } from "lucide-react";
 
 export default function UserDashboardPage() {
   const { isAuthenticated, userRole, remainingListings } = useAuth();
@@ -15,7 +16,7 @@ export default function UserDashboardPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       toast.error("Please sign in to access your dashboard");
-      navigate("/");
+      navigate("/auth");
     }
   }, [isAuthenticated, navigate]);
   
@@ -38,14 +39,15 @@ export default function UserDashboardPage() {
             <h3 className="font-medium mb-1">Account Type: {userRole === "agent" ? "Agent" : "User"}</h3>
             <p className="text-sm text-gray-600 mb-2">
               {userRole === "agent" 
-                ? "You can list up to 5 properties for free" 
-                : "You can list up to 3 properties for free"}
+                ? "You can list up to 5 properties for free, or upgrade to list up to 20 properties." 
+                : "You can list up to 3 properties for free, or upgrade to list up to 7 properties."}
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
                 {remainingListings} free listings remaining
               </span>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" onClick={() => navigate("/upgrade")}>
+                <Shield className="w-4 h-4 mr-2" />
                 Upgrade Account
               </Button>
             </div>

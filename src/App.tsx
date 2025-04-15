@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import AuthPage from "./pages/AuthPage";
+import UpgradePage from "./pages/UpgradePage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/map" element={<MapViewPage />} />
               <Route path="/dashboard" element={<UserDashboardPage />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/upgrade" element={<UpgradePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

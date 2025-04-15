@@ -28,10 +28,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [listings, setListings] = useState<number>(0);
+  const [isPremium, setIsPremium] = useState<boolean>(false);
   
-  // Define listing limits based on role
-  const maxListings = userRole === "agent" ? 5 : userRole === "user" ? 3 : 0;
-  const remainingListings = isAuthenticated ? maxListings - listings : null;
+  // Define listing limits based on role and premium status
+  const getMaxListings = () => {
+    if (userRole === "agent") {
+      return isPremium ? 20 : 5;
+    } else if (userRole === "user") {
+      return isPremium ? 7 : 3;
+    } 
+    return 0;
+  };
+  
+  const remainingListings = isAuthenticated ? getMaxListings() - listings : null;
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -111,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const addListing = () => {
-    if (listings >= maxListings) {
+    if (listings >= getMaxListings()) {
       toast.error("You've reached your listing limit. Please upgrade your account.");
       return;
     }
@@ -127,10 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const upgradeAccount = () => {
-    // This is a mock implementation until Supabase and Stripe are integrated
+    // This would connect to Stripe or another payment processor in a real implementation
+    setIsPremium(true);
     toast.success("Account upgraded successfully");
-    // Update the maximum listings depending on the role
-    // This would involve a payment process in the real implementation
+    toast.info(`You can now list up to ${userRole === "agent" ? 20 : 7} properties.`);
   };
 
   return (
