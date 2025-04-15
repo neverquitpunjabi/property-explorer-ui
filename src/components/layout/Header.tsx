@@ -2,10 +2,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Menu, X } from "lucide-react";
+import { Search, MapPin, Menu, X, UserPlus, LogIn } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import ListPropertyButton from "../properties/ListPropertyButton";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated, userRole, remainingListings } = useAuth();
   
   return (
     <header className="border-b sticky top-0 bg-white z-50">
@@ -28,7 +31,31 @@ export default function Header() {
             <Search className="h-4 w-4 mr-2" />
             Search
           </Button>
-          <Button>Sign In</Button>
+          
+          {isAuthenticated ? (
+            <>
+              <ListPropertyButton />
+              <Button variant="outline">
+                Dashboard
+                {remainingListings !== null && (
+                  <span className="ml-2 px-2 py-0.5 bg-primary/10 rounded-full text-xs">
+                    {remainingListings} listings left
+                  </span>
+                )}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="sm">
+                <LogIn className="h-4 w-4 mr-1" />
+                Sign In
+              </Button>
+              <Button size="sm">
+                <UserPlus className="h-4 w-4 mr-1" />
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
         
         <button 
@@ -53,7 +80,31 @@ export default function Header() {
                 <Search className="h-4 w-4 mr-2" />
                 Search
               </Button>
-              <Button className="w-full">Sign In</Button>
+              
+              {isAuthenticated ? (
+                <>
+                  <ListPropertyButton className="w-full" />
+                  <Button variant="outline" className="w-full justify-between">
+                    Dashboard
+                    {remainingListings !== null && (
+                      <span className="px-2 py-0.5 bg-primary/10 rounded-full text-xs">
+                        {remainingListings} listings left
+                      </span>
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Button>
+                  <Button className="w-full justify-start">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
