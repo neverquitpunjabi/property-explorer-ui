@@ -11,6 +11,7 @@ import MapViewPage from "./pages/MapViewPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import UserDashboardPage from "./pages/UserDashboardPage";
+import AuthPage from "./pages/AuthPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/property/:propertyId" element={<PropertyDetailPage />} />
             <Route path="/map" element={<MapViewPage />} />
             <Route path="/dashboard" element={<UserDashboardPage />} />
+            <Route path="/auth" element={<AuthPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,14 +1,31 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Menu, X, UserPlus, LogIn } from "lucide-react";
+import { 
+  Search, MapPin, Menu, X, UserPlus, LogIn, 
+  User, LogOut, Settings, Home 
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import ListPropertyButton from "../properties/ListPropertyButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isAuthenticated, userRole, remainingListings } = useAuth();
+  const { isAuthenticated, userRole, remainingListings, user, logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
   
   return (
     <header className="border-b sticky top-0 bg-white z-50">
@@ -35,22 +52,49 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <ListPropertyButton />
-              <Button variant="outline">
-                Dashboard
-                {remainingListings !== null && (
-                  <span className="ml-2 px-2 py-0.5 bg-primary/10 rounded-full text-xs">
-                    {remainingListings} listings left
-                  </span>
-                )}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <User className="h-4 w-4 mr-2" />
+                    Account
+                    {remainingListings !== null && (
+                      <span className="ml-2 px-2 py-0.5 bg-primary/10 rounded-full text-xs">
+                        {remainingListings} listings
+                      </span>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {user?.email}
+                    <span className="block text-xs text-muted-foreground">
+                      {userRole === "agent" ? "Agent Account" : "User Account"}
+                    </span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <Home className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
                 <LogIn className="h-4 w-4 mr-1" />
                 Sign In
               </Button>
-              <Button size="sm">
+              <Button size="sm" onClick={() => navigate("/auth?tab=signup")}>
                 <UserPlus className="h-4 w-4 mr-1" />
                 Sign Up
               </Button>
@@ -84,7 +128,14 @@ export default function Header() {
               {isAuthenticated ? (
                 <>
                   <ListPropertyButton className="w-full" />
-                  <Button variant="outline" className="w-full justify-between">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate("/dashboard");
+                    }}
+                  >
                     Dashboard
                     {remainingListings !== null && (
                       <span className="px-2 py-0.5 bg-primary/10 rounded-full text-xs">
@@ -92,14 +143,39 @@ export default function Header() {
                       </span>
                     )}
                   </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-red-500 hover:text-red-700"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
                 </>
               ) : (
                 <>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate("/auth");
+                    }}
+                  >
                     <LogIn className="h-4 w-4 mr-2" />
                     Sign In
                   </Button>
-                  <Button className="w-full justify-start">
+                  <Button 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate("/auth?tab=signup");
+                    }}
+                  >
                     <UserPlus className="h-4 w-4 mr-2" />
                     Sign Up
                   </Button>
