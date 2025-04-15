@@ -32,7 +32,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="text-2xl font-bold text-primary flex items-center gap-1">
           <MapPin className="h-6 w-6" />
-          <span>EstateHub</span>
+          <span>1313 Housing Group</span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-6">

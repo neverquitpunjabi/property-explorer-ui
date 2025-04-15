@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/layout/MainLayout";
 import PropertyGrid from "@/components/properties/PropertyGrid";
 import { Property, properties } from "@/data/properties";
@@ -24,10 +23,10 @@ export default function Index() {
         <div className="container mx-auto px-4 py-24 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Find Your Dream Property
+              Discover Your Ideal Home in Chandigarh
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-200">
-              Discover the perfect home that matches your lifestyle and preferences
+              Premier housing solutions across Punjab, India with 1313 Housing Group
             </p>
             
             {/* Search Bar */}

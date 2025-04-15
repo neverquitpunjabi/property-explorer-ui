@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
@@ -10,10 +9,10 @@ export default function Footer() {
           <div>
             <Link to="/" className="text-xl font-bold text-primary flex items-center gap-1 mb-4">
               <MapPin className="h-5 w-5" />
-              <span>EstateHub</span>
+              <span>1313 Housing Group</span>
             </Link>
             <p className="text-gray-600 mb-4">
-              Finding your perfect property match with professionalism and care.
+              Connecting you with premier housing solutions in Chandigarh, Punjab, India.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-primary transition-colors">
@@ -58,22 +57,22 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-center">
                 <MapPin className="h-4 w-4 text-primary mr-2" />
-                <span className="text-gray-600">123 Estate St, Real City</span>
+                <span className="text-gray-600">Sector 17, Chandigarh, Punjab, India</span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 text-primary mr-2" />
-                <span className="text-gray-600">+1 (555) 123-4567</span>
+                <span className="text-gray-600">+91 (172) 123-4567</span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-4 w-4 text-primary mr-2" />
-                <span className="text-gray-600">info@estatehub.com</span>
+                <span className="text-gray-600">info@1313housinggroup.com</span>
               </li>
             </ul>
           </div>
         </div>
         
         <div className="border-t mt-12 pt-6 text-center text-gray-500">
-          <p>&copy; {new Date().getFullYear()} EstateHub. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} 1313 Housing Group. All rights reserved.</p>
         </div>
       </div>
     </footer>

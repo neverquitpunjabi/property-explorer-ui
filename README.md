@@ -1,8 +1,21 @@
-# Welcome to your Lovable project
+# 1313 Housing Group
 
-## Project info
+## Project Info
 
 **URL**: https://lovable.dev/projects/7d5db4a8-35b1-4c62-93c1-a42c4b9c37a2
+
+## About 1313 Housing Group
+
+1313 Housing Group is a premier real estate platform specializing in housing solutions in Chandigarh, Punjab, India. Our mission is to connect individuals and families with their ideal properties across the vibrant region of Punjab.
+
+## Location
+
+**Headquarters**: Sector 17, Chandigarh, Punjab, India
+
+## Contact Information
+
+- **Phone**: +91 (172) 123-4567
+- **Email**: info@1313housinggroup.com
 
 ## How can I edit this code?
 
@@ -60,7 +73,7 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## Deployment and Domain
 
 Simply open [Lovable](https://lovable.dev/projects/7d5db4a8-35b1-4c62-93c1-a42c4b9c37a2) and click on Share -> Publish.
 
