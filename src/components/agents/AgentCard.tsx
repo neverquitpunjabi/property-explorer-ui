@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
@@ -15,7 +14,7 @@ import {
   Facebook, 
   Instagram, 
   Twitter, 
-  WhatsApp
+  MessageSquare
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
@@ -125,7 +124,6 @@ export default function AgentCard({ agent }: AgentCardProps) {
         </div>
       </CardFooter>
       
-      {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -159,7 +157,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
               className="flex flex-col items-center gap-2 h-auto py-4"
               onClick={() => handleShareProfile("whatsapp")}
             >
-              <WhatsApp className="h-8 w-8 text-green-500" />
+              <MessageSquare className="h-8 w-8 text-green-500" />
               <span className="text-xs">WhatsApp</span>
             </Button>
             

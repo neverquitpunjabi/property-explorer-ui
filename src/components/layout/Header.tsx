@@ -39,7 +39,7 @@ export default function Header() {
           <Link to="/" className="font-medium hover:text-primary transition-colors">Home</Link>
           <Link to="/properties" className="font-medium hover:text-primary transition-colors">Properties</Link>
           <Link to="/map" className="font-medium hover:text-primary transition-colors">Map View</Link>
-          <Link to="#" className="font-medium hover:text-primary transition-colors">Agents</Link>
+          <Link to="/agents" className="font-medium hover:text-primary transition-colors">Agents</Link>
           <Link to="#" className="font-medium hover:text-primary transition-colors">About</Link>
         </nav>
         
@@ -117,7 +117,7 @@ export default function Header() {
             <Link to="/" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>Home</Link>
             <Link to="/properties" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>Properties</Link>
             <Link to="/map" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>Map View</Link>
-            <Link to="#" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>Agents</Link>
+            <Link to="/agents" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>Agents</Link>
             <Link to="#" className="py-2 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>About</Link>
             <div className="pt-2 flex flex-col space-y-2">
               <Button variant="outline" size="sm" className="w-full justify-start">

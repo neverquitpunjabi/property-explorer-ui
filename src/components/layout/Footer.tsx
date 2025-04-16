@@ -36,7 +36,7 @@ export default function Footer() {
               <li><Link to="/" className="text-gray-600 hover:text-primary transition-colors">Home</Link></li>
               <li><Link to="/properties" className="text-gray-600 hover:text-primary transition-colors">Properties</Link></li>
               <li><Link to="/map" className="text-gray-600 hover:text-primary transition-colors">Map View</Link></li>
-              <li><Link to="#" className="text-gray-600 hover:text-primary transition-colors">Agents</Link></li>
+              <li><Link to="/agents" className="text-gray-600 hover:text-primary transition-colors">Agents</Link></li>
               <li><Link to="#" className="text-gray-600 hover:text-primary transition-colors">About Us</Link></li>
             </ul>
           </div>
