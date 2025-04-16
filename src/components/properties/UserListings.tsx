@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Trash2 } from "lucide-react";
+import { toast } from "@/components/ui/sonner";
 
 // Mock data for user listings
 const mockListings = [
@@ -37,9 +38,26 @@ export default function UserListings() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<typeof mockListings[0] | null>(null);
+  const [listings, setListings] = useState(mockListings);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    price: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    address: "",
+    description: ""
+  });
   
   const handleEdit = (listing: typeof mockListings[0]) => {
     setSelectedListing(listing);
+    setEditFormData({
+      title: listing.title,
+      price: listing.price,
+      bedrooms: listing.bedrooms,
+      bathrooms: listing.bathrooms,
+      address: listing.address,
+      description: listing.description
+    });
     setEditDialogOpen(true);
   };
   
@@ -50,8 +68,49 @@ export default function UserListings() {
   
   const confirmDelete = () => {
     if (selectedListing) {
+      // Update the local state
+      setListings(listings.filter(listing => listing.id !== selectedListing.id));
+      
+      // Call the deleteListing function from auth context
       deleteListing(selectedListing.id);
       setDeleteDialogOpen(false);
+      toast.success("Listing deleted successfully");
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    const formId = id.replace('edit-', '');
+    
+    setEditFormData(prev => ({
+      ...prev,
+      [formId]: id.includes('price') || id.includes('bedrooms') || id.includes('bathrooms')
+        ? Number(value)
+        : value
+    }));
+  };
+  
+  const handleSubmitEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (selectedListing) {
+      const updatedListing = {
+        ...selectedListing,
+        title: editFormData.title,
+        price: editFormData.price,
+        bedrooms: editFormData.bedrooms,
+        bathrooms: editFormData.bathrooms,
+        address: editFormData.address,
+        description: editFormData.description
+      };
+      
+      // Update the local state
+      setListings(listings.map(listing => 
+        listing.id === selectedListing.id ? updatedListing : listing
+      ));
+      
+      setEditDialogOpen(false);
+      toast.success("Listing updated successfully");
     }
   };
   
@@ -61,13 +120,13 @@ export default function UserListings() {
         <h2 className="text-2xl font-bold">Your Listings</h2>
         <div className="text-sm text-muted-foreground">
           {userRole === "agent" 
-            ? "Free tier: 5 listings | Premium: 10 listings" 
+            ? "Free tier: 5 listings | Premium: 20 listings" 
             : "Free tier: 3 listings | Premium: 7 listings"}
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockListings.map(listing => (
+        {listings.map(listing => (
           <div key={listing.id} className="border rounded-lg overflow-hidden shadow-sm">
             <div className="h-48 bg-gray-200">
               <img 
@@ -120,13 +179,14 @@ export default function UserListings() {
           </DialogHeader>
           
           {selectedListing && (
-            <form className="grid gap-4 py-4">
+            <form className="grid gap-4 py-4" onSubmit={handleSubmitEdit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="edit-title">Property Title</Label>
                   <Input 
                     id="edit-title" 
-                    defaultValue={selectedListing.title} 
+                    value={editFormData.title}
+                    onChange={handleInputChange}
                     required 
                   />
                 </div>
@@ -135,7 +195,8 @@ export default function UserListings() {
                   <Input 
                     id="edit-price" 
                     type="number" 
-                    defaultValue={selectedListing.price} 
+                    value={editFormData.price}
+                    onChange={handleInputChange}
                     required 
                   />
                 </div>
@@ -148,7 +209,8 @@ export default function UserListings() {
                     id="edit-bedrooms" 
                     type="number" 
                     min="0" 
-                    defaultValue={selectedListing.bedrooms} 
+                    value={editFormData.bedrooms}
+                    onChange={handleInputChange}
                     required 
                   />
                 </div>
@@ -159,7 +221,8 @@ export default function UserListings() {
                     type="number" 
                     min="0" 
                     step="0.5" 
-                    defaultValue={selectedListing.bathrooms} 
+                    value={editFormData.bathrooms}
+                    onChange={handleInputChange}
                     required 
                   />
                 </div>
@@ -169,7 +232,8 @@ export default function UserListings() {
                 <Label htmlFor="edit-address">Address</Label>
                 <Input 
                   id="edit-address" 
-                  defaultValue={selectedListing.address} 
+                  value={editFormData.address}
+                  onChange={handleInputChange}
                   required 
                 />
               </div>
@@ -178,7 +242,8 @@ export default function UserListings() {
                 <Label htmlFor="edit-description">Description</Label>
                 <Textarea 
                   id="edit-description" 
-                  defaultValue={selectedListing.description} 
+                  value={editFormData.description}
+                  onChange={handleInputChange}
                   required 
                 />
               </div>
