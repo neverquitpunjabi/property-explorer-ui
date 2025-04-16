@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { Shield } from "lucide-react";
+import { Shield, User } from "lucide-react";
 
 export default function UserDashboardPage() {
   const { isAuthenticated, userRole, remainingListings } = useAuth();
@@ -35,21 +35,30 @@ export default function UserDashboardPage() {
             </p>
           </div>
           
-          <div className="bg-primary/10 p-4 rounded-lg">
-            <h3 className="font-medium mb-1">Account Type: {userRole === "agent" ? "Agent" : "User"}</h3>
-            <p className="text-sm text-gray-600 mb-2">
-              {userRole === "agent" 
-                ? "You can list up to 13 properties for free, or upgrade to list up to 63 properties." 
-                : "You can list up to 3 properties for free, or upgrade to list up to 13 properties."}
-            </p>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">
-                {remainingListings} free listings remaining
-              </span>
-              <Button size="sm" variant="outline" onClick={() => navigate("/upgrade")}>
-                <Shield className="w-4 h-4 mr-2" />
-                Upgrade Account
+          <div className="flex gap-3">
+            {userRole === "agent" && (
+              <Button variant="outline" onClick={() => navigate("/profile")}>
+                <User className="w-4 h-4 mr-2" />
+                Manage Profile
               </Button>
+            )}
+            
+            <div className="bg-primary/10 p-4 rounded-lg">
+              <h3 className="font-medium mb-1">Account Type: {userRole === "agent" ? "Agent" : "User"}</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                {userRole === "agent" 
+                  ? "You can list up to 13 properties for free, or upgrade to list up to 63 properties." 
+                  : "You can list up to 3 properties for free, or upgrade to list up to 13 properties."}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">
+                  {remainingListings} free listings remaining
+                </span>
+                <Button size="sm" variant="outline" onClick={() => navigate("/upgrade")}>
+                  <Shield className="w-4 h-4 mr-2" />
+                  Upgrade Account
+                </Button>
+              </div>
             </div>
           </div>
         </div>

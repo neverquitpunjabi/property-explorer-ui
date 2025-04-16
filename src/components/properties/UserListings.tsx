@@ -6,39 +6,17 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Plus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
-
-// Mock data for user listings
-const mockListings = [
-  {
-    id: "1",
-    title: "Modern Downtown Apartment",
-    price: 320000,
-    bedrooms: 2,
-    bathrooms: 2,
-    address: "123 Main St, Downtown",
-    description: "A beautiful modern apartment in the heart of downtown.",
-    imageUrl: "/placeholder.svg"
-  },
-  {
-    id: "2",
-    title: "Suburban Family Home",
-    price: 450000,
-    bedrooms: 4,
-    bathrooms: 3,
-    address: "456 Oak Ave, Suburbia",
-    description: "Perfect family home with a large backyard.",
-    imageUrl: "/placeholder.svg"
-  }
-];
+import { useNavigate } from "react-router-dom";
 
 export default function UserListings() {
-  const { userRole, deleteListing } = useAuth();
+  const { userRole, deleteListing, remainingListings } = useAuth();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedListing, setSelectedListing] = useState<typeof mockListings[0] | null>(null);
-  const [listings, setListings] = useState(mockListings);
+  const [selectedListing, setSelectedListing] = useState<any | null>(null);
+  const [listings, setListings] = useState<any[]>([]);
+  const navigate = useNavigate();
   const [editFormData, setEditFormData] = useState({
     title: "",
     price: 0,
@@ -48,7 +26,7 @@ export default function UserListings() {
     description: ""
   });
   
-  const handleEdit = (listing: typeof mockListings[0]) => {
+  const handleEdit = (listing: any) => {
     setSelectedListing(listing);
     setEditFormData({
       title: listing.title,
@@ -61,7 +39,7 @@ export default function UserListings() {
     setEditDialogOpen(true);
   };
   
-  const handleDelete = (listing: typeof mockListings[0]) => {
+  const handleDelete = (listing: any) => {
     setSelectedListing(listing);
     setDeleteDialogOpen(true);
   };
@@ -113,6 +91,10 @@ export default function UserListings() {
       toast.success("Listing updated successfully");
     }
   };
+
+  const handleAddListing = () => {
+    navigate("/properties/add");
+  };
   
   return (
     <div className="container mx-auto py-8">
@@ -120,53 +102,70 @@ export default function UserListings() {
         <h2 className="text-2xl font-bold">Your Listings</h2>
         <div className="text-sm text-muted-foreground">
           {userRole === "agent" 
-            ? "Free tier: 5 listings | Premium: 20 listings" 
-            : "Free tier: 3 listings | Premium: 7 listings"}
+            ? "Free tier: 13 listings | Premium: 63 listings" 
+            : "Free tier: 3 listings | Premium: 13 listings"}
         </div>
       </div>
+
+      <div className="mb-6 flex justify-end">
+        <Button onClick={handleAddListing} disabled={remainingListings === 0}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Listing
+        </Button>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {listings.map(listing => (
-          <div key={listing.id} className="border rounded-lg overflow-hidden shadow-sm">
-            <div className="h-48 bg-gray-200">
-              <img 
-                src={listing.imageUrl} 
-                alt={listing.title} 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="font-semibold text-lg mb-1">{listing.title}</h3>
-              <p className="text-primary font-bold mb-2">${listing.price.toLocaleString()}</p>
-              <p className="text-sm text-gray-600 mb-4">{listing.address}</p>
-              
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-500">
-                  {listing.bedrooms} bed • {listing.bathrooms} bath
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => handleEdit(listing)}
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="destructive" 
-                    onClick={() => handleDelete(listing)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Delete
-                  </Button>
+      {listings.length === 0 ? (
+        <div className="text-center py-12 border rounded-lg bg-muted/20">
+          <p className="text-muted-foreground mb-4">You haven't created any property listings yet.</p>
+          <Button onClick={handleAddListing} disabled={remainingListings === 0}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Your First Listing
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {listings.map(listing => (
+            <div key={listing.id} className="border rounded-lg overflow-hidden shadow-sm">
+              <div className="h-48 bg-gray-200">
+                <img 
+                  src={listing.imageUrl || "/placeholder.svg"} 
+                  alt={listing.title} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-lg mb-1">{listing.title}</h3>
+                <p className="text-primary font-bold mb-2">${listing.price.toLocaleString()}</p>
+                <p className="text-sm text-gray-600 mb-4">{listing.address}</p>
+                
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-500">
+                    {listing.bedrooms} bed • {listing.bathrooms} bath
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => handleEdit(listing)}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="destructive" 
+                      onClick={() => handleDelete(listing)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>

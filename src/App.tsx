@@ -15,6 +15,7 @@ import UserDashboardPage from "./pages/UserDashboardPage";
 import AuthPage from "./pages/AuthPage";
 import UpgradePage from "./pages/UpgradePage";
 import AgentsPage from "./pages/AgentsPage";
+import AgentProfilePage from "./pages/AgentProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/upgrade" element={<UpgradePage />} />
               <Route path="/agents" element={<AgentsPage />} />
+              <Route path="/profile" element={<AgentProfilePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
