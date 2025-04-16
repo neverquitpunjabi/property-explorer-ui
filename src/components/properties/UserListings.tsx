@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
-import { useNavigate } from "react-router-dom";
+import ListPropertyButton from "./ListPropertyButton";
 
 export default function UserListings() {
   const { userRole, deleteListing, remainingListings } = useAuth();
@@ -16,7 +15,6 @@ export default function UserListings() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<any | null>(null);
   const [listings, setListings] = useState<any[]>([]);
-  const navigate = useNavigate();
   const [editFormData, setEditFormData] = useState({
     title: "",
     price: 0,
@@ -91,10 +89,6 @@ export default function UserListings() {
       toast.success("Listing updated successfully");
     }
   };
-
-  const handleAddListing = () => {
-    navigate("/properties/add");
-  };
   
   return (
     <div className="container mx-auto py-8">
@@ -108,19 +102,13 @@ export default function UserListings() {
       </div>
 
       <div className="mb-6 flex justify-end">
-        <Button onClick={handleAddListing} disabled={remainingListings === 0}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Listing
-        </Button>
+        <ListPropertyButton />
       </div>
       
       {listings.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-muted/20">
           <p className="text-muted-foreground mb-4">You haven't created any property listings yet.</p>
-          <Button onClick={handleAddListing} disabled={remainingListings === 0}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Your First Listing
-          </Button>
+          <ListPropertyButton />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

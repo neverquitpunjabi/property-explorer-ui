@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/sonner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface ListPropertyButtonProps {
   className?: string;
@@ -17,6 +18,7 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
   const [dialogOpen, setDialogOpen] = useState(false);
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const { userRole, remainingListings, addListing, upgradeAccount } = useAuth();
+  const [listingType, setListingType] = useState<"sale" | "rent">("sale");
   
   const handleOpenDialog = () => {
     if (remainingListings && remainingListings > 0) {
@@ -30,7 +32,7 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
     e.preventDefault();
     addListing();
     setDialogOpen(false);
-    toast.success("Property listed successfully");
+    toast.success(`Property listed successfully for ${listingType === "rent" ? "rent" : "sale"}`);
   };
 
   const handleUpgrade = () => {
@@ -65,14 +67,33 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
           </DialogHeader>
 
           <form onSubmit={handleListProperty} className="grid gap-4 py-4">
+            <div className="flex flex-col space-y-1.5">
+              <Label>Listing Type</Label>
+              <RadioGroup 
+                defaultValue="sale" 
+                className="flex space-x-4"
+                value={listingType}
+                onValueChange={(value) => setListingType(value as "sale" | "rent")}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="sale" id="listing-sale" />
+                  <Label htmlFor="listing-sale">For Sale</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="rent" id="listing-rent" />
+                  <Label htmlFor="listing-rent">For Rent</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="title">Property Title</Label>
                 <Input id="title" placeholder="Luxurious 3-Bedroom Apartment" required />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="price">Price</Label>
-                <Input id="price" type="number" placeholder="250000" required />
+                <Label htmlFor="price">Price {listingType === "rent" ? "(monthly)" : ""}</Label>
+                <Input id="price" type="number" placeholder={listingType === "rent" ? "2500" : "250000"} required />
               </div>
             </div>
 

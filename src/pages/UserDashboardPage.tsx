@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { Shield, User } from "lucide-react";
+import { Shield, User, ListPlus } from "lucide-react";
+import ListPropertyButton from "@/components/properties/ListPropertyButton";
 
 export default function UserDashboardPage() {
   const { isAuthenticated, userRole, remainingListings } = useAuth();
@@ -61,6 +62,10 @@ export default function UserDashboardPage() {
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className="mb-6 flex justify-end">
+          <ListPropertyButton className="w-auto" />
         </div>
         
         <div className="mb-10">
