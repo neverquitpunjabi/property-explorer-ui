@@ -57,7 +57,7 @@ export default function UpgradePage() {
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <span>
-                    {userRole === "agent" ? "List up to 5 properties" : "List up to 3 properties"}
+                    {userRole === "agent" ? "List up to 13 properties" : "List up to 3 properties"}
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -82,14 +82,14 @@ export default function UpgradePage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold mb-6">
-                {userRole === "agent" ? "$19.99" : "$9.99"} <span className="text-sm text-muted-foreground font-normal">/month</span>
+                {userRole === "agent" ? "$63" : "$13"} <span className="text-sm text-muted-foreground font-normal">/month</span>
               </div>
               
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <span>
-                    {userRole === "agent" ? "List up to 20 properties" : "List up to 7 properties"}
+                    {userRole === "agent" ? "List up to 63 properties" : "List up to 13 properties"}
                   </span>
                 </li>
                 <li className="flex items-start gap-2">

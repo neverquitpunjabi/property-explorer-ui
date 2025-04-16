@@ -33,9 +33,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Define listing limits based on role and premium status
   const getMaxListings = () => {
     if (userRole === "agent") {
-      return isPremium ? 20 : 5;
+      return isPremium ? 63 : 13;
     } else if (userRole === "user") {
-      return isPremium ? 7 : 3;
+      return isPremium ? 13 : 3;
     } 
     return 0;
   };
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // This would connect to Stripe or another payment processor in a real implementation
     setIsPremium(true);
     toast.success("Account upgraded successfully");
-    toast.info(`You can now list up to ${userRole === "agent" ? 20 : 7} properties.`);
+    toast.info(`You can now list up to ${userRole === "agent" ? 63 : 13} properties.`);
   };
 
   return (

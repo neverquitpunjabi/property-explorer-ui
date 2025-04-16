@@ -39,8 +39,8 @@ export default function UserDashboardPage() {
             <h3 className="font-medium mb-1">Account Type: {userRole === "agent" ? "Agent" : "User"}</h3>
             <p className="text-sm text-gray-600 mb-2">
               {userRole === "agent" 
-                ? "You can list up to 5 properties for free, or upgrade to list up to 20 properties." 
-                : "You can list up to 3 properties for free, or upgrade to list up to 7 properties."}
+                ? "You can list up to 13 properties for free, or upgrade to list up to 63 properties." 
+                : "You can list up to 3 properties for free, or upgrade to list up to 13 properties."}
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
