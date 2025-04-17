@@ -10,8 +10,18 @@ import { Shield, User, ListPlus } from "lucide-react";
 import ListPropertyButton from "@/components/properties/ListPropertyButton";
 
 export default function UserDashboardPage() {
-  const { isAuthenticated, userRole, remainingListings } = useAuth();
+  const { isAuthenticated, userRole, remainingListings, user } = useAuth();
   const navigate = useNavigate();
+  
+  // Get user's display name from metadata or email
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.name) {
+      return user.user_metadata.name;
+    } else if (user?.email) {
+      return user.email.split('@')[0]; // Use part of email before @ as name
+    }
+    return userRole === "agent" ? "Agent" : "User";
+  };
   
   // Redirect if not authenticated
   useEffect(() => {
@@ -30,7 +40,7 @@ export default function UserDashboardPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Your Dashboard</h1>
+            <h1 className="text-3xl font-bold mb-2">Welcome, {getUserDisplayName()}</h1>
             <p className="text-gray-500">
               Manage your property listings and account settings
             </p>
@@ -56,7 +66,7 @@ export default function UserDashboardPage() {
                   {remainingListings} free listings remaining
                 </span>
                 <Button size="sm" variant="outline" onClick={() => navigate("/upgrade")}>
-                  <Shield className="w-4 h-4 mr-2" />
+                  <Shield className="w-4 w-4 mr-2" />
                   Upgrade Account
                 </Button>
               </div>

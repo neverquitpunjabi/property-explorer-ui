@@ -1,41 +1,54 @@
 
 import AgentCard from "./AgentCard";
-
-// Mock data for agents
-const mockAgents = [
-  {
-    id: "agent1",
-    name: "Rahul Sharma",
-    role: "Senior Real Estate Agent",
-    location: "Sector 17, Chandigarh",
-    phone: "+91 98765 43210",
-    email: "rahul.sharma@1313housinggroup.com",
-    listingCount: 8,
-    isPremium: true
-  },
-  {
-    id: "agent2",
-    name: "Priya Patel",
-    role: "Property Consultant",
-    location: "Sector 22, Chandigarh",
-    phone: "+91 87654 32109",
-    email: "priya.patel@1313housinggroup.com",
-    listingCount: 5,
-    isPremium: false
-  },
-  {
-    id: "agent3",
-    name: "Amit Singh",
-    role: "Commercial Property Specialist",
-    location: "Sector 8, Chandigarh",
-    phone: "+91 76543 21098",
-    email: "amit.singh@1313housinggroup.com",
-    listingCount: 12,
-    isPremium: true
-  }
-];
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AgentList() {
+  const { user } = useAuth();
+  
+  // Generate an agent name from the current user's email if available
+  const generateNameFromEmail = (email: string) => {
+    const namePart = email.split('@')[0];
+    // Convert john.doe or john_doe to John Doe
+    return namePart
+      .replace(/[._]/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+  
+  // Create a more dynamic agent list using the current user's information if available
+  const agentList = [
+    {
+      id: "agent1",
+      name: user?.user_metadata?.name || 
+            (user?.email ? generateNameFromEmail(user.email) : "Rahul Sharma"),
+      role: "Senior Real Estate Agent",
+      location: "Sector 17, Chandigarh",
+      phone: "+91 98765 43210",
+      email: user?.email || "rahul.sharma@1313housinggroup.com",
+      listingCount: 8,
+      isPremium: true
+    },
+    {
+      id: "agent2",
+      name: "Priya Patel",
+      role: "Property Consultant",
+      location: "Sector 22, Chandigarh",
+      phone: "+91 87654 32109",
+      email: "priya.patel@1313housinggroup.com",
+      listingCount: 5,
+      isPremium: false
+    },
+    {
+      id: "agent3",
+      name: "Amit Singh",
+      role: "Commercial Property Specialist",
+      location: "Sector 8, Chandigarh",
+      phone: "+91 76543 21098",
+      email: "amit.singh@1313housinggroup.com",
+      listingCount: 12,
+      isPremium: true
+    }
+  ];
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
@@ -46,7 +59,7 @@ export default function AgentList() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {mockAgents.map(agent => (
+        {agentList.map(agent => (
           <AgentCard key={agent.id} agent={agent} />
         ))}
       </div>

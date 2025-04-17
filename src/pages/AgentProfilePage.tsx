@@ -3,7 +3,6 @@ import MainLayout from "@/components/layout/MainLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Avatar } from "@/components/ui/avatar";
@@ -66,19 +65,22 @@ export default function AgentProfilePage() {
       return;
     }
     
-    // In a real app, we would fetch the agent profile from the database here
-    // For now, we'll use mock data
+    // Use user's actual information from auth if available
+    // Create a default name from email if name is not available
+    const emailName = user?.email ? user.email.split('@')[0] : '';
+    const displayName = user?.user_metadata?.name || emailName;
+    
     form.reset({
-      name: "Rahul Sharma",
-      role: "Senior Real Estate Agent",
-      location: "Sector 17, Chandigarh",
-      phone: "+91 98765 43210",
-      email: user?.email || "rahul.sharma@1313housinggroup.com",
-      about: "I specialize in luxury properties in Chandigarh and have 7+ years of experience in the real estate market.",
-      facebook: "https://facebook.com/rahulsharma",
-      instagram: "https://instagram.com/rahulsharma",
-      twitter: "https://twitter.com/rahulsharma",
-      whatsapp: "+91 98765 43210"
+      name: displayName,
+      role: user?.user_metadata?.role === "agent" ? "Real Estate Agent" : "Property Consultant",
+      location: "Chandigarh",
+      phone: user?.phone || "+91 98765 43210",
+      email: user?.email || "",
+      about: "I specialize in properties in Chandigarh and surrounding areas.",
+      facebook: "",
+      instagram: "",
+      twitter: "",
+      whatsapp: ""
     });
     
   }, [isAuthenticated, userRole, navigate, user, form]);
