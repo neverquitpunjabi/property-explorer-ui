@@ -105,7 +105,10 @@ export default function UserManagement() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={user.status === "active" ? "success" : "destructive"}>
+                  <Badge 
+                    variant={user.status === "active" ? "default" : "destructive"}
+                    className={user.status === "active" ? "bg-green-500 hover:bg-green-600" : ""}
+                  >
                     {user.status}
                   </Badge>
                 </TableCell>

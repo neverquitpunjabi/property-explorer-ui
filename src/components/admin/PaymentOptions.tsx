@@ -1,452 +1,279 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { CreditCard, DollarSign, QrCode, Smartphone, CheckCircle } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { 
-  CreditCard, Banknote, Qr, QrCode, Wallet, CreditCardIcon, 
-  IndianRupee, Save, Upload, ExternalLink 
-} from "lucide-react";
 
 export default function PaymentOptions() {
-  const [activeTab, setActiveTab] = useState("gateways");
-  const [qrEnabled, setQrEnabled] = useState(true);
-  const [stripeEnabled, setStripeEnabled] = useState(true);
-  const [razorpayEnabled, setRazorpayEnabled] = useState(false);
-  const [paytmEnabled, setPaytmEnabled] = useState(false);
-  const [gpayEnabled, setGpayEnabled] = useState(false);
-  
-  const [qrConfigOpen, setQrConfigOpen] = useState(false);
-  const [stripeConfigOpen, setStripeConfigOpen] = useState(false);
-  const [razorpayConfigOpen, setRazorpayConfigOpen] = useState(false);
-  const [paytmConfigOpen, setPaytmConfigOpen] = useState(false);
-  const [gpayConfigOpen, setGpayConfigOpen] = useState(false);
-  
-  const handleSaveConfig = (gateway: string) => {
-    toast.success(`${gateway} configuration saved successfully`);
+  const [activePaymentMethods, setActivePaymentMethods] = useState({
+    stripe: true,
+    razorpay: false,
+    paytm: false,
+    googlePay: false,
+    qr: false,
+  });
+
+  const togglePaymentMethod = (method: keyof typeof activePaymentMethods) => {
+    setActivePaymentMethods(prev => ({
+      ...prev,
+      [method]: !prev[method]
+    }));
     
-    // Close the corresponding config sheet
-    switch (gateway) {
-      case "QR Code":
-        setQrConfigOpen(false);
-        break;
-      case "Stripe":
-        setStripeConfigOpen(false);
-        break;
-      case "Razorpay":
-        setRazorpayConfigOpen(false);
-        break;
-      case "Paytm":
-        setPaytmConfigOpen(false);
-        break;
-      case "Google Pay":
-        setGpayConfigOpen(false);
-        break;
-    }
+    toast.success(`${method.charAt(0).toUpperCase() + method.slice(1)} payment option ${activePaymentMethods[method] ? 'disabled' : 'enabled'}`);
   };
-  
+
+  const saveSettings = () => {
+    // In a real app, this would save to a backend
+    toast.success("Payment settings saved successfully");
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Payment Options</h2>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="gateways" className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
-            Payment Gateways
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
-            <Wallet className="h-4 w-4" />
-            Global Settings
-          </TabsTrigger>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Payment Options</h2>
+      </div>
+
+      <Tabs defaultValue="gateways" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="gateways">Payment Gateways</TabsTrigger>
+          <TabsTrigger value="settings">Configuration</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="gateways" className="space-y-6">
+        <TabsContent value="gateways" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* QR Code Payment */}
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <QrCode className="h-5 w-5" />
-                      QR Code Payment
-                    </CardTitle>
-                    <CardDescription>Accept payments via custom QR codes</CardDescription>
-                  </div>
-                  <Switch 
-                    checked={qrEnabled} 
-                    onCheckedChange={setQrEnabled} 
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Customers can scan a QR code to make payments to your bank accounts or UPI.
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Sheet open={qrConfigOpen} onOpenChange={setQrConfigOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full" disabled={!qrEnabled}>
-                      Configure
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>QR Code Payment Settings</SheetTitle>
-                      <SheetDescription>
-                        Configure your QR code payment options
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="py-6 space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="qr-name">Payment Name</Label>
-                        <Input id="qr-name" placeholder="e.g. Property Deposit" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Upload QR Code</Label>
-                        <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center gap-2">
-                          <Upload className="h-8 w-8 text-muted-foreground" />
-                          <p className="text-sm text-center text-muted-foreground">
-                            Drag and drop your QR code image here, or click to browse
-                          </p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            Select File
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="upi-id">UPI ID (Optional)</Label>
-                        <Input id="upi-id" placeholder="yourname@bank" />
-                        <p className="text-xs text-muted-foreground">
-                          If provided, a QR code will be generated automatically
-                        </p>
-                      </div>
-                    </div>
-                    <SheetFooter>
-                      <Button onClick={() => handleSaveConfig("QR Code")}>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Configuration
-                      </Button>
-                    </SheetFooter>
-                  </SheetContent>
-                </Sheet>
-              </CardFooter>
-            </Card>
-            
             {/* Stripe */}
             <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <CreditCardIcon className="h-5 w-5" />
-                      Stripe
-                    </CardTitle>
-                    <CardDescription>International payment gateway</CardDescription>
-                  </div>
-                  <Switch 
-                    checked={stripeEnabled} 
-                    onCheckedChange={setStripeEnabled} 
-                  />
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Stripe
+                </CardTitle>
+                <CardDescription>
+                  Accept credit card payments globally
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Accept credit cards, debit cards, and other payment methods worldwide.
-                </p>
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="stripe" 
+                    checked={activePaymentMethods.stripe}
+                    onCheckedChange={() => togglePaymentMethod('stripe')}
+                  />
+                  <Label htmlFor="stripe">
+                    {activePaymentMethods.stripe ? 'Enabled' : 'Disabled'}
+                  </Label>
+                </div>
+                {activePaymentMethods.stripe && (
+                  <div className="mt-4 text-xs text-muted-foreground bg-muted p-2 rounded">
+                    <p className="font-semibold mb-1">Connected Account:</p>
+                    <p>Real Estate Platform Ltd</p>
+                    <p>stripe_account_id_12345</p>
+                  </div>
+                )}
               </CardContent>
               <CardFooter>
-                <Sheet open={stripeConfigOpen} onOpenChange={setStripeConfigOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full" disabled={!stripeEnabled}>
-                      Configure
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Stripe Configuration</SheetTitle>
-                      <SheetDescription>
-                        Configure your Stripe payment gateway
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="py-6 space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="stripe-public-key">Publishable Key</Label>
-                        <Input id="stripe-public-key" placeholder="pk_test_..." />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="stripe-secret-key">Secret Key</Label>
-                        <Input id="stripe-secret-key" type="password" placeholder="sk_test_..." />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="stripe-webhook-secret">Webhook Secret (Optional)</Label>
-                        <Input id="stripe-webhook-secret" placeholder="whsec_..." />
-                      </div>
-                      <Button variant="outline" className="w-full" size="sm" asChild>
-                        <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                          <ExternalLink className="h-4 w-4" />
-                          Go to Stripe Dashboard
-                        </a>
-                      </Button>
-                    </div>
-                    <SheetFooter>
-                      <Button onClick={() => handleSaveConfig("Stripe")}>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Configuration
-                      </Button>
-                    </SheetFooter>
-                  </SheetContent>
-                </Sheet>
+                <Button size="sm" variant="outline" className="w-full">
+                  Configure
+                </Button>
               </CardFooter>
             </Card>
-            
+
             {/* Razorpay */}
             <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <IndianRupee className="h-5 w-5" />
-                      Razorpay
-                    </CardTitle>
-                    <CardDescription>Indian payment gateway</CardDescription>
-                  </div>
-                  <Switch 
-                    checked={razorpayEnabled} 
-                    onCheckedChange={setRazorpayEnabled} 
-                  />
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5" />
+                  Razorpay
+                </CardTitle>
+                <CardDescription>
+                  Popular payment solution for India
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Accept payments via UPI, cards, netbanking and other Indian payment methods.
-                </p>
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="razorpay" 
+                    checked={activePaymentMethods.razorpay}
+                    onCheckedChange={() => togglePaymentMethod('razorpay')}
+                  />
+                  <Label htmlFor="razorpay">
+                    {activePaymentMethods.razorpay ? 'Enabled' : 'Disabled'}
+                  </Label>
+                </div>
               </CardContent>
               <CardFooter>
-                <Sheet open={razorpayConfigOpen} onOpenChange={setRazorpayConfigOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full" disabled={!razorpayEnabled}>
-                      Configure
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Razorpay Configuration</SheetTitle>
-                      <SheetDescription>
-                        Configure your Razorpay payment gateway
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="py-6 space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="razorpay-key-id">Key ID</Label>
-                        <Input id="razorpay-key-id" placeholder="rzp_test_..." />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="razorpay-key-secret">Key Secret</Label>
-                        <Input id="razorpay-key-secret" type="password" placeholder="Your Razorpay key secret" />
-                      </div>
-                      <Button variant="outline" className="w-full" size="sm" asChild>
-                        <a href="https://dashboard.razorpay.com/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                          <ExternalLink className="h-4 w-4" />
-                          Go to Razorpay Dashboard
-                        </a>
-                      </Button>
-                    </div>
-                    <SheetFooter>
-                      <Button onClick={() => handleSaveConfig("Razorpay")}>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Configuration
-                      </Button>
-                    </SheetFooter>
-                  </SheetContent>
-                </Sheet>
+                <Button size="sm" variant="outline" className="w-full">
+                  Configure
+                </Button>
               </CardFooter>
             </Card>
-            
+
             {/* Paytm */}
             <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Wallet className="h-5 w-5" />
-                      Paytm
-                    </CardTitle>
-                    <CardDescription>Indian payment solution</CardDescription>
-                  </div>
-                  <Switch 
-                    checked={paytmEnabled} 
-                    onCheckedChange={setPaytmEnabled} 
-                  />
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5" />
+                  Paytm
+                </CardTitle>
+                <CardDescription>
+                  Mobile payments and wallet
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Accept payments via Paytm Wallet, UPI, cards and more.
-                </p>
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="paytm" 
+                    checked={activePaymentMethods.paytm}
+                    onCheckedChange={() => togglePaymentMethod('paytm')}
+                  />
+                  <Label htmlFor="paytm">
+                    {activePaymentMethods.paytm ? 'Enabled' : 'Disabled'}
+                  </Label>
+                </div>
               </CardContent>
               <CardFooter>
-                <Sheet open={paytmConfigOpen} onOpenChange={setPaytmConfigOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full" disabled={!paytmEnabled}>
-                      Configure
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Paytm Configuration</SheetTitle>
-                      <SheetDescription>
-                        Configure your Paytm payment gateway
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="py-6 space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="paytm-merchant-id">Merchant ID</Label>
-                        <Input id="paytm-merchant-id" placeholder="Your Paytm Merchant ID" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="paytm-merchant-key">Merchant Key</Label>
-                        <Input id="paytm-merchant-key" type="password" placeholder="Your Paytm Merchant Key" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="paytm-website">Website</Label>
-                        <Input id="paytm-website" placeholder="WEBSTAGING" />
-                      </div>
-                      <Button variant="outline" className="w-full" size="sm" asChild>
-                        <a href="https://business.paytm.com/dashboard" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                          <ExternalLink className="h-4 w-4" />
-                          Go to Paytm Business Dashboard
-                        </a>
-                      </Button>
-                    </div>
-                    <SheetFooter>
-                      <Button onClick={() => handleSaveConfig("Paytm")}>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Configuration
-                      </Button>
-                    </SheetFooter>
-                  </SheetContent>
-                </Sheet>
+                <Button size="sm" variant="outline" className="w-full">
+                  Configure
+                </Button>
               </CardFooter>
             </Card>
-            
+
             {/* Google Pay */}
             <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Banknote className="h-5 w-5" />
-                      Google Pay
-                    </CardTitle>
-                    <CardDescription>Google Pay for Business</CardDescription>
-                  </div>
-                  <Switch 
-                    checked={gpayEnabled} 
-                    onCheckedChange={setGpayEnabled} 
-                  />
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5" />
+                  Google Pay
+                </CardTitle>
+                <CardDescription>
+                  Fast, simple, and secure payments
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Accept payments via Google Pay for Business.
-                </p>
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="googlePay" 
+                    checked={activePaymentMethods.googlePay}
+                    onCheckedChange={() => togglePaymentMethod('googlePay')}
+                  />
+                  <Label htmlFor="googlePay">
+                    {activePaymentMethods.googlePay ? 'Enabled' : 'Disabled'}
+                  </Label>
+                </div>
               </CardContent>
               <CardFooter>
-                <Sheet open={gpayConfigOpen} onOpenChange={setGpayConfigOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full" disabled={!gpayEnabled}>
-                      Configure
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Google Pay Configuration</SheetTitle>
-                      <SheetDescription>
-                        Configure your Google Pay for Business integration
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="py-6 space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="gpay-merchant-id">Merchant ID</Label>
-                        <Input id="gpay-merchant-id" placeholder="Your Google Pay Merchant ID" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="gpay-merchant-name">Merchant Name</Label>
-                        <Input id="gpay-merchant-name" placeholder="Your Business Name" />
-                      </div>
-                      <Button variant="outline" className="w-full" size="sm" asChild>
-                        <a href="https://pay.google.com/business/console" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                          <ExternalLink className="h-4 w-4" />
-                          Go to Google Pay for Business
-                        </a>
-                      </Button>
-                    </div>
-                    <SheetFooter>
-                      <Button onClick={() => handleSaveConfig("Google Pay")}>
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Configuration
-                      </Button>
-                    </SheetFooter>
-                  </SheetContent>
-                </Sheet>
+                <Button size="sm" variant="outline" className="w-full">
+                  Configure
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* QR Code Payments */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <QrCode className="h-5 w-5" />
+                  QR Payments
+                </CardTitle>
+                <CardDescription>
+                  Generate QR codes for direct transfers
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="qr" 
+                    checked={activePaymentMethods.qr}
+                    onCheckedChange={() => togglePaymentMethod('qr')}
+                  />
+                  <Label htmlFor="qr">
+                    {activePaymentMethods.qr ? 'Enabled' : 'Disabled'}
+                  </Label>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button size="sm" variant="outline" className="w-full">
+                  Configure
+                </Button>
               </CardFooter>
             </Card>
           </div>
+          
+          <div className="mt-6 flex justify-end">
+            <Button onClick={saveSettings}>
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Save Settings
+            </Button>
+          </div>
         </TabsContent>
         
-        <TabsContent value="settings" className="space-y-6">
+        <TabsContent value="settings" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Global Payment Settings</CardTitle>
-              <CardDescription>Configure global settings for all payment methods</CardDescription>
+              <CardTitle>Payment Configuration</CardTitle>
+              <CardDescription>
+                Configure general payment settings and transaction rules
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="test-mode">Test Mode</Label>
-                  <Switch id="test-mode" defaultChecked />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  When enabled, all payments will be processed in test mode and no real transactions will occur.
-                </p>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="transaction-fee">Transaction Fee (%)</Label>
+                <input 
+                  id="transaction-fee" 
+                  type="number" 
+                  min="0" 
+                  max="100" 
+                  step="0.1" 
+                  defaultValue="2.5"
+                  className="w-full p-2 border rounded"
+                />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="currency">Default Currency</Label>
-                <select
-                  id="currency"
-                  className="w-full p-2 border rounded-md"
-                  defaultValue="INR"
-                >
-                  <option value="USD">USD - US Dollar</option>
-                  <option value="INR">INR - Indian Rupee</option>
-                  <option value="EUR">EUR - Euro</option>
-                  <option value="GBP">GBP - British Pound</option>
+              <div className="flex items-center space-x-2">
+                <Switch id="automatic-payouts" defaultChecked />
+                <Label htmlFor="automatic-payouts">Enable automatic payouts</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch id="escrow-payments" defaultChecked />
+                <Label htmlFor="escrow-payments">Use escrow for property transactions</Label>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="payout-threshold">Minimum payout amount ($)</Label>
+                <input 
+                  id="payout-threshold" 
+                  type="number" 
+                  min="0" 
+                  step="10" 
+                  defaultValue="100"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="payout-schedule">Payout Schedule</Label>
+                <select id="payout-schedule" className="w-full p-2 border rounded">
+                  <option value="daily">Daily</option>
+                  <option value="weekly" selected>Weekly</option>
+                  <option value="biweekly">Bi-weekly</option>
+                  <option value="monthly">Monthly</option>
                 </select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="success-url">Payment Success URL</Label>
-                <Input id="success-url" placeholder="https://yourdomain.com/payment/success" defaultValue="/payment/success" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="cancel-url">Payment Cancel URL</Label>
-                <Input id="cancel-url" placeholder="https://yourdomain.com/payment/cancel" defaultValue="/payment/cancel" />
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => toast.success("Global payment settings saved")}>
-                Save Settings
-              </Button>
+              <Button className="w-full">Save Configuration</Button>
             </CardFooter>
           </Card>
         </TabsContent>

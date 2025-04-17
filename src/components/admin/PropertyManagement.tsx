@@ -101,7 +101,8 @@ export default function PropertyManagement() {
                 </TableCell>
                 <TableCell>{property.owner}</TableCell>
                 <TableCell>
-                  <Badge variant={property.status === "active" ? "success" : "outline"}>
+                  <Badge variant={property.status === "active" ? "default" : "outline"} 
+                         className={property.status === "active" ? "bg-green-500 hover:bg-green-600" : ""}>
                     {property.status}
                   </Badge>
                 </TableCell>

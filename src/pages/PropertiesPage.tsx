@@ -7,6 +7,13 @@ import { Property, getFilteredProperties } from "@/data/properties";
 import { Button } from "@/components/ui/button";
 import { Grid2X2, ListFilter, LayoutList, MapPin } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function PropertiesPage() {
   const [searchParams] = useSearchParams();
@@ -19,6 +26,7 @@ export default function PropertiesPage() {
     propertyTypes: [],
     listingType: undefined,
   });
+  const [sortOption, setSortOption] = useState("newest");
 
   // Initialize filters from URL params
   useEffect(() => {
@@ -47,6 +55,11 @@ export default function PropertiesPage() {
 
   const handleFilterChange = (filters: PropertyFilterOptions) => {
     setActiveFilters(filters);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortOption(value);
+    // Logic for sorting properties would go here
   };
 
   return (
@@ -85,13 +98,18 @@ export default function PropertiesPage() {
               
               <Select
                 defaultValue="newest"
-                options={[
-                  { value: "newest", label: "Newest First" },
-                  { value: "oldest", label: "Oldest First" },
-                  { value: "price-asc", label: "Price: Low to High" },
-                  { value: "price-desc", label: "Price: High to Low" },
-                ]}
-              />
+                onValueChange={handleSortChange}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                  <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -109,44 +127,5 @@ export default function PropertiesPage() {
         </div>
       </div>
     </MainLayout>
-  );
-}
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
-
-interface SelectProps {
-  options: SelectOption[];
-  defaultValue?: string;
-  onChange?: (value: string) => void;
-  className?: string;
-}
-
-function Select({ options, defaultValue, onChange, className = "" }: SelectProps) {
-  return (
-    <div className={`relative ${className}`}>
-      <select
-        defaultValue={defaultValue}
-        onChange={(e) => onChange?.(e.target.value)}
-        className="appearance-none bg-white border rounded-lg py-2 pl-3 pr-10 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </div>
-    </div>
   );
 }

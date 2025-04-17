@@ -235,14 +235,14 @@ export default function PropertyFilters({ onFilterChange }: PropertyFiltersProps
                 <div>
                   <Label htmlFor="min-beds">Bedrooms (min)</Label>
                   <Select 
-                    value={filters.minBeds?.toString() || ""}
+                    value={filters.minBeds?.toString() || "any"}
                     onValueChange={handleBedroomsChange}
                   >
                     <SelectTrigger id="min-beds">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="any">Any</SelectItem>
                       <SelectItem value="1">1+</SelectItem>
                       <SelectItem value="2">2+</SelectItem>
                       <SelectItem value="3">3+</SelectItem>
@@ -254,14 +254,14 @@ export default function PropertyFilters({ onFilterChange }: PropertyFiltersProps
                 <div>
                   <Label htmlFor="min-baths">Bathrooms (min)</Label>
                   <Select 
-                    value={filters.minBaths?.toString() || ""}
+                    value={filters.minBaths?.toString() || "any"}
                     onValueChange={handleBathroomsChange}
                   >
                     <SelectTrigger id="min-baths">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="any">Any</SelectItem>
                       <SelectItem value="1">1+</SelectItem>
                       <SelectItem value="2">2+</SelectItem>
                       <SelectItem value="3">3+</SelectItem>
