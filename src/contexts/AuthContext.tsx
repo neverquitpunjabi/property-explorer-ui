@@ -1,10 +1,9 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 
-type UserRole = "user" | "agent" | null;
+type UserRole = "user" | "agent" | "admin" | null;
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -30,9 +29,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [listings, setListings] = useState<number>(0);
   const [isPremium, setIsPremium] = useState<boolean>(false);
   
-  // Define listing limits based on role and premium status
   const getMaxListings = () => {
-    if (userRole === "agent") {
+    if (userRole === "admin") {
+      return isPremium ? 100 : 20;
+    } else if (userRole === "agent") {
       return isPremium ? 63 : 13;
     } else if (userRole === "user") {
       return isPremium ? 13 : 3;
@@ -43,26 +43,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const remainingListings = isAuthenticated ? getMaxListings() - listings : null;
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setIsAuthenticated(!!session?.user);
         
-        // Get user role from session metadata
         const role = session?.user?.user_metadata?.role as UserRole || "user";
         setUserRole(role);
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsAuthenticated(!!session?.user);
       
-      // Get user role from session metadata
       const role = session?.user?.user_metadata?.role as UserRole || "user";
       setUserRole(role);
     });
@@ -130,16 +126,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteListing = (id: string) => {
-    // This is a mock implementation until Supabase is integrated
     setListings(prevListings => Math.max(0, prevListings - 1));
     toast.success("Property deleted successfully");
   };
 
   const upgradeAccount = () => {
-    // This would connect to Stripe or another payment processor in a real implementation
     setIsPremium(true);
     toast.success("Account upgraded successfully");
-    toast.info(`You can now list up to ${userRole === "agent" ? 63 : 13} properties.`);
+    toast.info(`You can now list up to ${userRole === "admin" ? 100 : userRole === "agent" ? 63 : 13} properties.`);
   };
 
   return (
