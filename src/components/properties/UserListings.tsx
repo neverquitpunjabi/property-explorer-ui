@@ -1,12 +1,11 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import ListPropertyButton from "./ListPropertyButton";
 import { formatPrice } from "@/data/properties";
@@ -100,9 +99,14 @@ export default function UserListings() {
             <div key={listing.id} className="border rounded-lg overflow-hidden shadow-sm">
               <div className="h-48 bg-gray-200">
                 <img 
-                  src={listing.images[0] || "/placeholder.svg"} 
+                  src={listing.images[0]} 
                   alt={listing.title} 
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to placeholder if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/placeholder.svg";
+                  }}
                 />
               </div>
               <div className="p-4">
@@ -224,6 +228,24 @@ export default function UserListings() {
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="edit-images">Upload New Images</Label>
                 <Input id="edit-images" type="file" multiple accept="image/*" />
+                
+                {selectedListing.images && selectedListing.images.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm font-medium mb-1">Current Image:</p>
+                    <div className="relative h-40 w-full overflow-hidden rounded-md border">
+                      <img 
+                        src={selectedListing.images[0]} 
+                        alt="Property preview" 
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
               
               <DialogFooter>

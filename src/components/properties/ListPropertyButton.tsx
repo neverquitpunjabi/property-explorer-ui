@@ -69,9 +69,10 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
   const handleListProperty = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Determine the image to use - either the uploaded one or a default
+    // Determine the image to use - use the uploaded one from preview URL if available
     const imageUrl = previewUrl || "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200";
     
+    // Create the new property with the form data and uploaded image
     const newProperty: Omit<Property, "id"> = {
       title: formData.title,
       address: formData.address,
@@ -84,7 +85,7 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
       squareFeet: Number(formData.squareFeet),
       description: formData.description,
       features: [],
-      images: [imageUrl],
+      images: [imageUrl], // Use the uploaded image URL
       coordinates: {
         lat: 30.7333,
         lng: 76.7794
@@ -95,10 +96,11 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
       isFeatured: false
     };
     
+    // Add the new property
     addListing(newProperty);
     setDialogOpen(false);
     
-    // Reset form
+    // Reset form data and image state
     setFormData({
       title: "",
       price: "",
@@ -115,6 +117,9 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
     });
     setSelectedImage(null);
     setPreviewUrl(null);
+    
+    // Show success message
+    toast.success("Property listed successfully with uploaded image");
   };
 
   const handleUpgrade = () => {
