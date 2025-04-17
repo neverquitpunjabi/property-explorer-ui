@@ -243,9 +243,9 @@ export const properties: Property[] = [
 ];
 
 export function formatPrice(price: number, isRental: boolean = false): string {
-  const formatter = new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });

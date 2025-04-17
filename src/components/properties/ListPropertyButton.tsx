@@ -20,6 +20,8 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const { userRole, remainingListings, addListing, upgradeAccount } = useAuth();
   const [listingType, setListingType] = useState<"sale" | "rent">("sale");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -49,9 +51,26 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
   };
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      
+      // Create a preview URL for the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleListProperty = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Determine the image to use - either the uploaded one or a default
+    const imageUrl = previewUrl || "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200";
     
     const newProperty: Omit<Property, "id"> = {
       title: formData.title,
@@ -65,9 +84,7 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
       squareFeet: Number(formData.squareFeet),
       description: formData.description,
       features: [],
-      images: [
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200"
-      ],
+      images: [imageUrl],
       coordinates: {
         lat: 30.7333,
         lng: 76.7794
@@ -96,6 +113,8 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
       propertyType: "house" as Property["propertyType"],
       yearBuilt: new Date().getFullYear() - 5
     });
+    setSelectedImage(null);
+    setPreviewUrl(null);
   };
 
   const handleUpgrade = () => {
@@ -161,11 +180,11 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="price">Price {listingType === "rent" ? "(monthly)" : ""}</Label>
+                <Label htmlFor="price">Price in ₹ {listingType === "rent" ? "(monthly)" : ""}</Label>
                 <Input 
                   id="price" 
                   type="number" 
-                  placeholder={listingType === "rent" ? "2500" : "250000"} 
+                  placeholder={listingType === "rent" ? "25000" : "2500000"} 
                   value={formData.price}
                   onChange={handleInputChange}
                   required 
@@ -225,10 +244,31 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="images">Upload Images</Label>
-              <Input id="images" type="file" multiple accept="image/*" />
-              <p className="text-xs text-muted-foreground mt-1">
-                (Default image will be used if none uploaded)
-              </p>
+              <Input 
+                id="images" 
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageChange}
+              />
+              
+              {previewUrl && (
+                <div className="mt-2">
+                  <p className="text-sm font-medium mb-1">Image Preview:</p>
+                  <div className="relative h-40 w-full overflow-hidden rounded-md border">
+                    <img 
+                      src={previewUrl} 
+                      alt="Property preview" 
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {!previewUrl && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  (Default image will be used if none uploaded)
+                </p>
+              )}
             </div>
 
             <DialogFooter>
@@ -248,8 +288,8 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
             <DialogTitle>Upgrade Your Account</DialogTitle>
             <DialogDescription>
               {userRole === "agent" 
-                ? "Upgrade to list up to 63 properties for just $63/month." 
-                : "Upgrade to list up to 13 properties for just $13/month."}
+                ? "Upgrade to list up to 63 properties for just ₹6,300/month." 
+                : "Upgrade to list up to 13 properties for just ₹1,300/month."}
             </DialogDescription>
           </DialogHeader>
 
@@ -264,7 +304,7 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
                   : "List up to 13 properties with improved search rankings and better visibility."}
               </p>
               <div className="text-2xl font-bold">
-                {userRole === "agent" ? "$63" : "$13"}<span className="text-sm text-muted-foreground">/month</span>
+                {userRole === "agent" ? "₹6,300" : "₹1,300"}<span className="text-sm text-muted-foreground">/month</span>
               </div>
             </div>
           </div>

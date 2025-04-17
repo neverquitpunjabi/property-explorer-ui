@@ -6,18 +6,35 @@ import { Button } from "@/components/ui/button";
 import { SearchIcon, MapPin, Home, Building, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
 
 export default function Index() {
-  const { userProperties } = useAuth();
+  const { isAuthenticated, userProperties } = useAuth();
+  const [displayedProperties, setDisplayedProperties] = useState<Property[]>([]);
+  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   
-  // Combine user properties with sample properties, with user properties first
-  const allProperties = [...userProperties, ...properties.filter(property => !property.isFeatured)];
-  
-  // Get featured properties, prioritizing user properties marked as featured
-  const featuredProperties = [
-    ...userProperties.filter(property => property.isFeatured),
-    ...properties.filter(property => property.isFeatured)
-  ];
+  // Update displayed properties whenever userProperties changes
+  useEffect(() => {
+    // Combine user properties with sample properties, prioritizing user properties
+    const allProps = [...userProperties]; 
+    
+    // Add some sample properties but avoid duplicates with user properties
+    const sampleProps = properties.filter(prop => 
+      !userProperties.some(userProp => userProp.id === prop.id) && !prop.isFeatured
+    );
+    
+    // Take a limited number of sample properties to avoid overwhelming the page
+    const limitedSampleProps = sampleProps.slice(0, 6 - userProperties.length);
+    
+    // Featured properties logic - combine featured user properties with sample featured properties
+    const userFeatured = userProperties.filter(prop => prop.isFeatured);
+    const sampleFeatured = properties.filter(prop => 
+      !userProperties.some(userProp => userProp.id === prop.id) && prop.isFeatured
+    );
+    
+    setDisplayedProperties([...allProps, ...limitedSampleProps]);
+    setFeaturedProperties([...userFeatured, ...sampleFeatured]);
+  }, [userProperties]);
   
   return (
     <MainLayout>
@@ -75,6 +92,28 @@ export default function Index() {
         </div>
       </section>
       
+      {/* User Properties Section (if authenticated) */}
+      {isAuthenticated && userProperties.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold mb-4">Your Properties</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Manage and view your listed properties
+              </p>
+            </div>
+            
+            <PropertyGrid properties={userProperties} />
+            
+            <div className="mt-8 text-center">
+              <Link to="/dashboard">
+                <Button variant="outline" size="lg">Manage Your Properties</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+      
       {/* Featured Properties */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -85,7 +124,33 @@ export default function Index() {
             </p>
           </div>
           
-          <PropertyGrid properties={featuredProperties} />
+          {featuredProperties.length > 0 ? (
+            <PropertyGrid properties={featuredProperties} />
+          ) : (
+            <div className="text-center py-10">
+              <p className="text-muted-foreground">No featured properties available at the moment.</p>
+            </div>
+          )}
+          
+          <div className="mt-12 text-center">
+            <Link to="/properties">
+              <Button size="lg">View All Properties</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+      
+      {/* Latest Properties */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-bold mb-4">Latest Properties</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Browse our newest listings to find your perfect property
+            </p>
+          </div>
+          
+          <PropertyGrid properties={displayedProperties.slice(0, 6)} />
           
           <div className="mt-12 text-center">
             <Link to="/properties">
@@ -96,7 +161,7 @@ export default function Index() {
       </section>
       
       {/* Property Types */}
-      <section className="py-16">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold mb-4">Explore Property Types</h2>
