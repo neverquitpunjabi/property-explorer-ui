@@ -1,7 +1,10 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { Property } from "@/data/properties";
+import { v4 as uuidv4 } from 'uuid';
 
 type UserRole = "user" | "agent" | "admin" | null;
 
@@ -11,10 +14,11 @@ interface AuthContextType {
   remainingListings: number | null;
   listings: number;
   user: User | null;
+  userProperties: Property[];
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
-  addListing: () => void;
+  addListing: (propertyData: Omit<Property, "id">) => void;
   deleteListing: (id: string) => void;
   upgradeAccount: () => void;
 }
@@ -28,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [listings, setListings] = useState<number>(0);
   const [isPremium, setIsPremium] = useState<boolean>(false);
+  const [userProperties, setUserProperties] = useState<Property[]>([]);
   
   const getMaxListings = () => {
     if (userRole === "admin") {
@@ -115,17 +120,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addListing = () => {
+  const addListing = (propertyData: Omit<Property, "id">) => {
     if (listings >= getMaxListings()) {
       toast.error("You've reached your listing limit. Please upgrade your account.");
       return;
     }
     
-    setListings(listings + 1);
+    const newProperty: Property = {
+      id: `user-prop-${uuidv4()}`,
+      ...propertyData
+    };
+    
+    // Add to user properties
+    setUserProperties(prevProperties => [...prevProperties, newProperty]);
+    setListings(prevListings => prevListings + 1);
     toast.success("Property listed successfully");
+    
+    return newProperty;
   };
 
   const deleteListing = (id: string) => {
+    // Remove from user properties
+    setUserProperties(prevProperties => prevProperties.filter(property => property.id !== id));
     setListings(prevListings => Math.max(0, prevListings - 1));
     toast.success("Property deleted successfully");
   };
@@ -144,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         remainingListings,
         listings,
         user,
+        userProperties,
         login,
         register,
         logout,

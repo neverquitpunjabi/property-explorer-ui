@@ -1,12 +1,23 @@
+
 import MainLayout from "@/components/layout/MainLayout";
 import PropertyGrid from "@/components/properties/PropertyGrid";
 import { Property, properties } from "@/data/properties";
 import { Button } from "@/components/ui/button";
 import { SearchIcon, MapPin, Home, Building, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
-  const featuredProperties = properties.filter(property => property.isFeatured);
+  const { userProperties } = useAuth();
+  
+  // Combine user properties with sample properties, with user properties first
+  const allProperties = [...userProperties, ...properties.filter(property => !property.isFeatured)];
+  
+  // Get featured properties, prioritizing user properties marked as featured
+  const featuredProperties = [
+    ...userProperties.filter(property => property.isFeatured),
+    ...properties.filter(property => property.isFeatured)
+  ];
   
   return (
     <MainLayout>

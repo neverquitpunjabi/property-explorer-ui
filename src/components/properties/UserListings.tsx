@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,13 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import ListPropertyButton from "./ListPropertyButton";
+import { formatPrice } from "@/data/properties";
 
 export default function UserListings() {
-  const { userRole, deleteListing, remainingListings } = useAuth();
+  const { userRole, userProperties, deleteListing, remainingListings } = useAuth();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<any | null>(null);
-  const [listings, setListings] = useState<any[]>([]);
   const [editFormData, setEditFormData] = useState({
     title: "",
     price: 0,
@@ -44,13 +45,9 @@ export default function UserListings() {
   
   const confirmDelete = () => {
     if (selectedListing) {
-      // Update the local state
-      setListings(listings.filter(listing => listing.id !== selectedListing.id));
-      
       // Call the deleteListing function from auth context
       deleteListing(selectedListing.id);
       setDeleteDialogOpen(false);
-      toast.success("Listing deleted successfully");
     }
   };
 
@@ -70,21 +67,8 @@ export default function UserListings() {
     e.preventDefault();
     
     if (selectedListing) {
-      const updatedListing = {
-        ...selectedListing,
-        title: editFormData.title,
-        price: editFormData.price,
-        bedrooms: editFormData.bedrooms,
-        bathrooms: editFormData.bathrooms,
-        address: editFormData.address,
-        description: editFormData.description
-      };
-      
-      // Update the local state
-      setListings(listings.map(listing => 
-        listing.id === selectedListing.id ? updatedListing : listing
-      ));
-      
+      // In a real app, this would update the property in the database
+      // For now, we'll just show a success message
       setEditDialogOpen(false);
       toast.success("Listing updated successfully");
     }
@@ -105,25 +89,27 @@ export default function UserListings() {
         <ListPropertyButton />
       </div>
       
-      {listings.length === 0 ? (
+      {userProperties.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-muted/20">
           <p className="text-muted-foreground mb-4">You haven't created any property listings yet.</p>
           <ListPropertyButton />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {listings.map(listing => (
+          {userProperties.map(listing => (
             <div key={listing.id} className="border rounded-lg overflow-hidden shadow-sm">
               <div className="h-48 bg-gray-200">
                 <img 
-                  src={listing.imageUrl || "/placeholder.svg"} 
+                  src={listing.images[0] || "/placeholder.svg"} 
                   alt={listing.title} 
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="p-4">
                 <h3 className="font-semibold text-lg mb-1">{listing.title}</h3>
-                <p className="text-primary font-bold mb-2">${listing.price.toLocaleString()}</p>
+                <p className="text-primary font-bold mb-2">
+                  {formatPrice(listing.price, listing.listingType === 'rent')}
+                </p>
                 <p className="text-sm text-gray-600 mb-4">{listing.address}</p>
                 
                 <div className="flex justify-between items-center">

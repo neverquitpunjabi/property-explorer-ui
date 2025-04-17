@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Property } from "@/data/properties";
 
 interface ListPropertyButtonProps {
   className?: string;
@@ -20,6 +21,22 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
   const { userRole, remainingListings, addListing, upgradeAccount } = useAuth();
   const [listingType, setListingType] = useState<"sale" | "rent">("sale");
   
+  // Form state
+  const [formData, setFormData] = useState({
+    title: "",
+    price: "",
+    bedrooms: "",
+    bathrooms: "",
+    address: "",
+    description: "",
+    city: "Chandigarh",
+    state: "Punjab",
+    zipCode: "160001",
+    squareFeet: "1000",
+    propertyType: "house" as Property["propertyType"],
+    yearBuilt: new Date().getFullYear() - 5
+  });
+  
   const handleOpenDialog = () => {
     if (remainingListings && remainingListings > 0) {
       setDialogOpen(true);
@@ -28,11 +45,57 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
   const handleListProperty = (e: React.FormEvent) => {
     e.preventDefault();
-    addListing();
+    
+    const newProperty: Omit<Property, "id"> = {
+      title: formData.title,
+      address: formData.address,
+      city: formData.city,
+      state: formData.state,
+      zipCode: formData.zipCode,
+      price: Number(formData.price),
+      bedrooms: Number(formData.bedrooms),
+      bathrooms: Number(formData.bathrooms),
+      squareFeet: Number(formData.squareFeet),
+      description: formData.description,
+      features: [],
+      images: [
+        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200"
+      ],
+      coordinates: {
+        lat: 30.7333,
+        lng: 76.7794
+      },
+      propertyType: formData.propertyType,
+      listingType: listingType,
+      yearBuilt: formData.yearBuilt,
+      isFeatured: false
+    };
+    
+    addListing(newProperty);
     setDialogOpen(false);
-    toast.success(`Property listed successfully for ${listingType === "rent" ? "rent" : "sale"}`);
+    
+    // Reset form
+    setFormData({
+      title: "",
+      price: "",
+      bedrooms: "",
+      bathrooms: "",
+      address: "",
+      description: "",
+      city: "Chandigarh",
+      state: "Punjab",
+      zipCode: "160001",
+      squareFeet: "1000",
+      propertyType: "house" as Property["propertyType"],
+      yearBuilt: new Date().getFullYear() - 5
+    });
   };
 
   const handleUpgrade = () => {
@@ -89,38 +152,83 @@ export default function ListPropertyButton({ className }: ListPropertyButtonProp
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="title">Property Title</Label>
-                <Input id="title" placeholder="Luxurious 3-Bedroom Apartment" required />
+                <Input 
+                  id="title" 
+                  placeholder="Luxurious 3-Bedroom Apartment" 
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required 
+                />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="price">Price {listingType === "rent" ? "(monthly)" : ""}</Label>
-                <Input id="price" type="number" placeholder={listingType === "rent" ? "2500" : "250000"} required />
+                <Input 
+                  id="price" 
+                  type="number" 
+                  placeholder={listingType === "rent" ? "2500" : "250000"} 
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  required 
+                />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="bedrooms">Bedrooms</Label>
-                <Input id="bedrooms" type="number" min="0" placeholder="3" required />
+                <Input 
+                  id="bedrooms" 
+                  type="number" 
+                  min="0" 
+                  placeholder="3" 
+                  value={formData.bedrooms}
+                  onChange={handleInputChange}
+                  required 
+                />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="bathrooms">Bathrooms</Label>
-                <Input id="bathrooms" type="number" min="0" step="0.5" placeholder="2" required />
+                <Input 
+                  id="bathrooms" 
+                  type="number" 
+                  min="0" 
+                  step="0.5" 
+                  placeholder="2" 
+                  value={formData.bathrooms}
+                  onChange={handleInputChange}
+                  required 
+                />
               </div>
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="address">Address</Label>
-              <Input id="address" placeholder="123 Main Street, City, State, Zip" required />
+              <Input 
+                id="address" 
+                placeholder="123 Main Street, City, State, Zip" 
+                value={formData.address}
+                onChange={handleInputChange}
+                required 
+              />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="description">Description</Label>
-              <Textarea id="description" placeholder="Enter property description..." required />
+              <Textarea 
+                id="description" 
+                placeholder="Enter property description..." 
+                value={formData.description}
+                onChange={handleInputChange}
+                required 
+              />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="images">Upload Images</Label>
-              <Input id="images" type="file" multiple accept="image/*" required />
+              <Input id="images" type="file" multiple accept="image/*" />
+              <p className="text-xs text-muted-foreground mt-1">
+                (Default image will be used if none uploaded)
+              </p>
             </div>
 
             <DialogFooter>
